@@ -1,13 +1,18 @@
 import React from 'react';
 import Header from '../components/todolist/header'
+import ItemList from '../components/todolist/itemList'
 import Footer from '../components/todolist/footer'
 import Toast from '../components/toast'
 class TodoList extends React.Component{
 	constructor(props) {
       super(props);
       this.state = {
-      	editInput:'',
+      	statusType:[
+      		{title:"正在进行",status:false},
+      		{title:"已经完成",status:true}	
+      	],
       	value:'',
+      	editInput:'',
       	todolist:JSON.parse(localStorage.getItem("todolist"))||[]
       }; 
        //绑定挂载事件
@@ -133,50 +138,36 @@ class TodoList extends React.Component{
 			todolist:newList,
 		});
 	}
-	single
 	
 	render() {
       return (
         <div className="todolist-container">
 	        <Header inputKeyUp={this.inputKeyUp.bind(this)} handleChange={this.handleChange.bind(this)} inputValue={this.state.value}></Header>
 			<section>
-				<h2>正在进行 <span id="todoCount">{this.state.todolist.filter(item => {
-                    return item.done === false}).length}</span></h2>
-				<ol id="todolist" className="demo-box">
-				{
-			      	this.state.todolist.filter(item => {
-                    	return item.done === false
-                	  }	
-			      	).map((list,index) =>
-			        <li key={list.id}>
-				        <input type="checkbox" checked={false} onChange={this.FinshEvent.bind(this,list.id,true)}/>
-				        {list.edit ? (
-					        <p><input onChange={this.EditChangeEvent.bind(this,list.id)} onBlur={this.EditBlurEvent.bind(this,list.id)} ref={(input) => { this.textTodoInput = input; }} value={this.state.editInput} autoFocus/></p>
-					      ) : (
-					        <p onClick={this.changeEditEvent.bind(this,list.id)}>{list.title}</p>
-					      )}
-						<i onClick={this.delete.bind(this,list.id)}>-</i>
-					</li>
-		        )}
-				</ol>
-				<h2>已经完成 <span id="doneCount">{this.state.todolist.filter(item =>{
-					return item.done === true}).length}</span></h2>
-				<ul id="doneList">
-				{
-					this.state.todolist.filter(item =>{
-						return item.done === true
-					}).map((list,index) =>
-			        <li key={index}>
-				        <input type="checkbox" checked={true} onChange={this.FinshEvent.bind(this,list.id,false)}/>
-				        {list.edit ? (
-					        <p><input onChange={this.EditChangeEvent.bind(this,list.id)} onBlur={this.EditBlurEvent.bind(this,list.id)}  ref={(input) => { this.textDoneInput = input; }} value={this.state.editInput} autoFocus/></p>
-					      ) : (
-					        <p onClick={this.changeEditEvent.bind(this,list.id)}>{list.title}</p>
-					      )}
-					    <i onClick={this.delete.bind(this,list.id)}>-</i>
-				    </li>
-		        )}
-				</ul>
+			{
+				this.state.statusType.map((numbers,index) =>
+				  <div key={index}>
+  					<h2>{numbers.title} <span>{this.state.todolist.filter(item => {
+	                    return item.done === numbers.status}).length}</span></h2> 
+	                    <ul className={numbers.status?'complete':''}>
+		                {
+		                    this.state.todolist.filter(item => {
+		                    	return item.done === numbers.status
+		                	  }	
+					      	).map((list,index) =>
+							<ItemList key={list.id} list={list} checked={list.done} FinshEvent={this.FinshEvent.bind(this,list.id,!list.done)} 
+							EditChangeEvent={this.EditChangeEvent.bind(this,list.id)}
+							EditBlurEvent ={this.EditBlurEvent.bind(this,list.id)}
+							changeEditEvent = {this.changeEditEvent.bind(this,list.id)}
+							delete = {this.delete.bind(this,list.id)}
+							editInput={this.state.editInput} 
+							/>
+							)
+					    }
+	                </ul>
+	              </div>
+				)
+			}
 			</section>
 			<Footer clearStorage={this.clearStorage.bind(this)}/>
         </div>
