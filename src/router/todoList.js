@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import Header from '../components/todolist/header'
 import ItemList from '../components/todolist/itemList'
 import Footer from '../components/todolist/footer'
@@ -137,6 +137,7 @@ class TodoList extends React.Component{
 		this.setState({
 			todolist:newList,
 		});
+		this.saveData();
 	}
 	
 	render() {
